@@ -9,30 +9,9 @@ import java.util.ArrayList;
  */
 public class BitReverseHillClimbing {
 
-	public static double upperX = 1.5;
-	public static double lowerX = -0.5;
-
-	public static double upperY = 1.5;
-	public static double lowerY = -0.5;
-
 	public static ArrayList<double[]> pathList;
 
 	public static int steps = 500;
-
-	/**
-	 * Equation to be solve
-	 * 
-	 * @param x
-	 * @param y
-	 * @return equation value
-	 */
-	public static double equation(double x, double y) {
-
-		double value = 0;
-		value = -20 - x * x - y * y + 10 * Math.cos(2 * Math.PI * x) + 10 * Math.cos(2 * Math.PI * y);
-
-		return value;
-	} // end of equation()
 
 	/**
 	 * Initialization
@@ -42,7 +21,7 @@ public class BitReverseHillClimbing {
 
 		double originX = Math.random() * 2 - 0.5;
 		double originY = Math.random() * 2 - 0.5;
-		pathList.add(new double[] { originX, originY, equation(originX, originY) });
+		pathList.add(new double[] { originX, originY, GA_HW1.equation(originX, originY) });
 	} // end of initialize()
 
 	/**
@@ -88,22 +67,6 @@ public class BitReverseHillClimbing {
 	} // end of reverseBit()
 
 	/**
-	 * Check if the input is out of bound
-	 * 
-	 * @param input
-	 * @param upper
-	 * @param lower
-	 * @return boolean value if the input is out of bound
-	 */
-	public static boolean inBound(double input, double upper, double lower) {
-		if (input > upper || input < lower) {
-			return false;
-		} else {
-			return true;
-		}
-	} // end of checkBound()
-
-	/**
 	 * Operation of each step
 	 */
 	public static void nextStep() {
@@ -113,12 +76,6 @@ public class BitReverseHillClimbing {
 		// pick XY
 		int dimension = (int) (Math.random() * 2);
 
-		for (double d : temp) {
-			System.out.print(d + "\t");
-		}
-		System.out.println(dimension);
-		System.out.println();
-
 		// encode
 		String bits = encode(temp[dimension]);
 
@@ -127,20 +84,16 @@ public class BitReverseHillClimbing {
 
 		// decode
 		double changedValue = decode(bits);
+		temp[dimension] = changedValue;
 
 		// check bound
-		if (dimension == 0) {
-			if (!inBound(changedValue, upperX, lowerX))
-				return;
-		} else if (dimension == 1) {
-			if (!inBound(changedValue, upperY, lowerY))
-				return;
+		if (!GA_HW1.inBound(temp)) {
+			return;
 		}
 
 		// Check higher and add list(or not)
-		temp[dimension] = changedValue;
-		if (equation(temp[0], temp[1]) > temp[2]) {
-			pathList.add(new double[] { temp[0], temp[1], equation(temp[0], temp[1]) });
+		if (GA_HW1.equation(temp[0], temp[1]) > temp[2]) {
+			pathList.add(new double[] { temp[0], temp[1], GA_HW1.equation(temp[0], temp[1]) });
 		}
 	} // end of nextStep()
 

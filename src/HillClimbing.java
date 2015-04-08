@@ -8,31 +8,10 @@ import java.util.ArrayList;
  */
 public class HillClimbing {
 
-	public static double upperX = 1.5;
-	public static double lowerX = -0.5;
-
-	public static double upperY = 1.5;
-	public static double lowerY = -0.5;
-
 	public static ArrayList<double[]> pathList;
 
-	public static int steps = 1000;
-	public static double stepLength = 0.0001;
-
-	/**
-	 * Equation to be solve
-	 * 
-	 * @param x
-	 * @param y
-	 * @return equation value
-	 */
-	public static double equation(double x, double y) {
-
-		double value = 0;
-		value = -20 - x * x - y * y + 10 * Math.cos(2 * Math.PI * x) + 10 * Math.cos(2 * Math.PI * y);
-
-		return value;
-	} // end of equation()
+	public static int steps = 10000;
+	public static double stepLength = 0.001;
 
 	/**
 	 * Initialization
@@ -42,24 +21,8 @@ public class HillClimbing {
 
 		double originX = Math.random() * 2 - 0.5;
 		double originY = Math.random() * 2 - 0.5;
-		pathList.add(new double[] { originX, originY, equation(originX, originY) });
+		pathList.add(new double[] { originX, originY, GA_HW1.equation(originX, originY) });
 	} // end of initialize()
-
-	/**
-	 * Check if the input is out of bound
-	 * 
-	 * @param input
-	 * @param upper
-	 * @param lower
-	 * @return boolean value if the input is out of bound
-	 */
-	public static boolean inBound(double input, double upper, double lower) {
-		if (input > upper || input < lower) {
-			return false;
-		} else {
-			return true;
-		}
-	} // end of checkBound()
 
 	/**
 	 * Operation of each step
@@ -68,6 +31,7 @@ public class HillClimbing {
 		// load previous
 		double[] temp = pathList.get(pathList.size() - 1).clone();
 
+		// choose direction
 		int direction = (int) (Math.random() * 4);
 
 		switch (direction) {
@@ -89,16 +53,13 @@ public class HillClimbing {
 		}
 
 		// check bound
-		if (!inBound(temp[0], upperX, lowerX)) {
-			return;
-		}
-		if (!inBound(temp[1], upperY, lowerY)) {
+		if (!GA_HW1.inBound(temp)) {
 			return;
 		}
 
 		// Check higher and add list(or not)
-		if (equation(temp[0], temp[1]) > temp[2]) {
-			pathList.add(new double[] { temp[0], temp[1], equation(temp[0], temp[1]) });
+		if (GA_HW1.equation(temp[0], temp[1]) > temp[2]) {
+			pathList.add(new double[] { temp[0], temp[1], GA_HW1.equation(temp[0], temp[1]) });
 		}
 
 	} // end of nextStep()
@@ -119,8 +80,6 @@ public class HillClimbing {
 			System.out.println();
 		}
 
-		// System.out.println((int) (Math.random() * 4));
-
 	} // end of main()
 
-} // end of class BitReverseHillClimbing
+} // end of class HillClimbing
