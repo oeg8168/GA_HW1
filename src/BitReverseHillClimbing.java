@@ -160,8 +160,6 @@ public class BitReverseHillClimbing {
 			System.out.println();
 		}
 
-		// System.out.println((int) (Math.random() * 4));
-
 	} // end of main()
 
 } // end of class BitReverseHillClimbing
