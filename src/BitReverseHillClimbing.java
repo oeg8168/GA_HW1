@@ -1,4 +1,3 @@
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
@@ -11,7 +10,7 @@ public class BitReverseHillClimbing {
 
 	public static ArrayList<double[]> pathList;
 
-	public static int steps = 500;
+	public static int steps = 1000;
 
 	/**
 	 * Initialization
@@ -25,48 +24,6 @@ public class BitReverseHillClimbing {
 	} // end of initialize()
 
 	/**
-	 * Encode double decimal value to binary bits
-	 * 
-	 * @param decimal
-	 * @return String of binary bits
-	 */
-	public static String encode(double decimal) {
-		return Long.toBinaryString(Double.doubleToLongBits(decimal));
-	} // end of encode()
-
-	/**
-	 * Decode binary bits to double decimal value
-	 * 
-	 * @param bits
-	 * @return double value of decoded binary bits
-	 */
-	public static double decode(String bits) {
-		return Double.longBitsToDouble(new BigInteger(bits, 2).longValue());
-	} // end of decode()
-
-	/**
-	 * Reverse bit at given index
-	 * 
-	 * @param bits
-	 * @param index
-	 * @return reversed bits string
-	 */
-	public static String reverseBit(String bits, int index) {
-
-		char[] temp = bits.toCharArray();
-		if (temp[index] == '0') {
-			temp[index] = '1';
-		} else if (temp[index] == '1') {
-			temp[index] = '0';
-		} else {
-			System.err.println("Reverse bits error!");
-			return null;
-		}
-
-		return new String(temp);
-	} // end of reverseBit()
-
-	/**
 	 * Operation of each step
 	 */
 	public static void nextStep() {
@@ -77,13 +34,13 @@ public class BitReverseHillClimbing {
 		int dimension = (int) (Math.random() * 2);
 
 		// encode
-		String bits = encode(temp[dimension]);
+		String bits = GA_HW1.encode(temp[dimension], dimension);
 
 		// random change bit
-		bits = reverseBit(bits, (int) (Math.random() * bits.length()));
+		bits = GA_HW1.reverseBit(bits, (int) (Math.random() * bits.length()));
 
 		// decode
-		double changedValue = decode(bits);
+		double changedValue = GA_HW1.decode(bits, dimension);
 		temp[dimension] = changedValue;
 
 		// check bound
@@ -112,6 +69,9 @@ public class BitReverseHillClimbing {
 			}
 			System.out.println();
 		}
+
+		// System.out.println(GA_HW1.encode(0.13, "X"));
+		// System.out.println(GA_HW1.decode("1111111111", "X"));
 
 	} // end of main()
 
