@@ -25,6 +25,7 @@ public class SimulatedAnnealing {
 	} // end of initialize()
 
 	/**
+	 * Count acceptance probabilities
 	 * 
 	 * @param oldValue
 	 * @param newValue
