@@ -82,7 +82,7 @@ public class ClassicalGA {
 	public static int maxPopulation = 10;
 	public static double crossoverRate = 0.70;
 	public static double mutationRate = 0.10;
-	public static int maxGeneration = 100;
+	public static int maxGeneration = 1000;
 
 	/**
 	 * Initialization
@@ -94,27 +94,67 @@ public class ClassicalGA {
 		for (int i = 0; i < maxPopulation; i++) {
 			populations.add(new Individual());
 		}
+
+		sortPopulations();
+		pathList.add(new ArrayList<Individual>(populations));
 	} // end of initialize()
 
-	public static ArrayList<Individual> selection() {
-		// TODO
-		return null;
-	}
+	/**
+	 * Sort populations by decreasing order
+	 */
+	public static void sortPopulations() {
+		populations.sort(new Comparator<Individual>() {
+			public int compare(Individual ind1, Individual ind2) {
+				return Double.compare(ind2.getFitness(), ind1.getFitness());
+			}
+		});
+	} // end of sortPopulations()
+
+	/**
+	 * Do selection using Roulette Wheel
+	 * 
+	 * @return selected index
+	 */
+	public static int selection() {
+
+		double totalFitness = 0;
+		for (Individual i : populations) {
+			totalFitness += Math.abs(i.getFitness());
+		}
+
+		// Roulette Wheel selection
+		int index = 0;
+		double shoot = Math.random();
+
+		double relativeFitness = 0;
+		double cumulativeFitness = 0;
+
+		while (true) {
+			relativeFitness = Math.abs(populations.get(index).getFitness()) / totalFitness;
+			cumulativeFitness += relativeFitness;
+
+			if (shoot < cumulativeFitness) {
+				return index;
+			} else {
+				index++;
+			}
+		}
+	} // end of selection()
 
 	/**
 	 * Make two parent individual crossover and generate children
 	 * 
-	 * @param f
+	 * @param p1
 	 *            - parent
-	 * @param m
+	 * @param p2
 	 *            - parent
 	 * @return
 	 */
-	public static ArrayList<Individual> crossover(Individual f, Individual m) {
+	public static ArrayList<Individual> crossover(Individual p1, Individual p2) {
 		int cutpoint = (int) (Math.random() * (2 * GA_HW1.numberOfBits - 1) + 1);
 
-		String child_1 = f.getGene().substring(0, cutpoint) + m.getGene().substring(cutpoint, m.getGene().length());
-		String child_2 = m.getGene().substring(0, cutpoint) + f.getGene().substring(cutpoint, f.getGene().length());
+		String child_1 = p1.getGene().substring(0, cutpoint) + p2.getGene().substring(cutpoint, p2.getGene().length());
+		String child_2 = p2.getGene().substring(0, cutpoint) + p1.getGene().substring(cutpoint, p1.getGene().length());
 
 		ArrayList<Individual> child = new ArrayList<Individual>();
 		child.add(new Individual(child_1));
@@ -138,17 +178,9 @@ public class ClassicalGA {
 	}// end of mutate()
 
 	/**
-	 * Sort populations and keep top N individuals
+	 * Keep top N individuals
 	 */
 	public static void keepBest() {
-		// Sort populations by decreasing order
-		populations.sort(new Comparator<Individual>() {
-			public int compare(Individual o1, Individual o2) {
-				return Double.compare(o2.getFitness(), o1.getFitness());
-			}
-		});
-
-		// Keep top N individuals
 		while (populations.size() > maxPopulation) {
 			populations.remove(populations.size() - 1);
 		}
@@ -158,12 +190,12 @@ public class ClassicalGA {
 	 * Operation taken for each generation
 	 */
 	public static void nextGeneration() {
-		// Crossover
+		// Selection and Reproduction
 		int index1;
 		int index2;
 		while (Math.random() < crossoverRate) {
-			index1 = (int) (Math.random() * populations.size());
-			index2 = (int) (Math.random() * populations.size());
+			index1 = selection();
+			index2 = selection();
 			populations.addAll(crossover(populations.get(index1), populations.get(index2)));
 		}
 
@@ -174,9 +206,12 @@ public class ClassicalGA {
 			populations.set(index, mutate(populations.get(index)));
 		}
 
+		sortPopulations();
 		keepBest();
 
-		pathList.add(new ArrayList<Individual>(populations));
+		if (!populations.equals(pathList.get(pathList.size() - 1))) {
+			pathList.add(new ArrayList<Individual>(populations));
+		}
 	}// end of nextGeneration()
 
 	public static void main(String[] args) {
@@ -189,11 +224,13 @@ public class ClassicalGA {
 		System.out.println("=====");
 
 		for (ArrayList<Individual> arrayList : pathList) {
+			System.out.println("Generation" + pathList.indexOf(arrayList));
 			for (Individual individual : arrayList) {
-				System.out.println(individual.getX() + " " + individual.getY() + " " + individual.getFitness());
+				System.out.println(individual.getX() + "\t" + individual.getY() + "\t" + individual.getFitness());
 			}
 			System.out.println("*****");
 		}
 
 	} // end of main()
+
 } // end of class ClassicalGA
