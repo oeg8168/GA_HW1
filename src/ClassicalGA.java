@@ -1,5 +1,10 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Data structure of an individual
@@ -76,20 +81,47 @@ class Individual {
 
 public class ClassicalGA {
 
+	public static File outputFolder;
 	public static ArrayList<Individual> populations;
 	public static ArrayList<ArrayList<Individual>> pathList;
+	public static ArrayList<ArrayList<Individual>> allList;
 
 	public static int maxPopulation = 10;
 	public static double crossoverRate = 0.70;
 	public static double mutationRate = 0.10;
-	public static int maxGeneration = 1000;
+	public static int maxGeneration = 200;
 
 	/**
 	 * Initialization
 	 */
 	public static void initialize() {
+
+		GA_HW1.createLogFolder();
+
+		// Create output folder
+		Date date = new Date();
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		outputFolder = new File("./Log/ClassicalGA/pathList_" + sdFormat.format(date));
+		if (!outputFolder.exists()) {
+			outputFolder.mkdir();
+		}
+
+		// Write down parameters
+		try {
+			FileWriter paramFW = new FileWriter(outputFolder.getAbsolutePath() + "/parameters.txt");
+			paramFW.write("maxPopulation = " + maxPopulation + "\r\n");
+			paramFW.write("crossoverRate = " + crossoverRate + "\r\n");
+			paramFW.write("mutationRate = " + mutationRate + "\r\n");
+			paramFW.write("maxGeneration = " + maxGeneration + "\r\n");
+			paramFW.close();
+		} catch (IOException e) {
+			System.err.println("Error while output parameter!");
+			e.printStackTrace();
+		}
+
 		populations = new ArrayList<Individual>();
 		pathList = new ArrayList<ArrayList<Individual>>();
+		allList = new ArrayList<ArrayList<Individual>>();
 
 		for (int i = 0; i < maxPopulation; i++) {
 			populations.add(new Individual());
@@ -209,10 +241,54 @@ public class ClassicalGA {
 		sortPopulations();
 		keepBest();
 
+		allList.add(new ArrayList<Individual>(populations));
+
 		if (!populations.equals(pathList.get(pathList.size() - 1))) {
 			pathList.add(new ArrayList<Individual>(populations));
 		}
 	}// end of nextGeneration()
+
+	/**
+	 * Output pathList
+	 */
+	public static void output() {
+
+		double averageFitness = 0;
+
+		// Write file
+		try {
+			FileWriter fw = new FileWriter(outputFolder.getAbsolutePath() + "/pathList.csv");
+			fw.write("x,y,f,Average fitness" + "\r\n");
+			for (ArrayList<Individual> arrayList : pathList) {
+				averageFitness = 0;
+				fw.write("Generation " + pathList.indexOf(arrayList) + "\r\n");
+				for (Individual individual : arrayList) {
+					fw.write(individual.getX() + "," + individual.getY() + "," + individual.getFitness() + "\r\n");
+					averageFitness += individual.getFitness();
+				}
+				averageFitness = averageFitness / arrayList.size();
+				fw.write("Average fitness:" + ",,," + averageFitness + "\r\n");
+			}
+			fw.close();
+
+			fw = new FileWriter(outputFolder.getAbsolutePath() + "/allList.csv");
+			fw.write("x,y,f,Average fitness" + "\r\n");
+			for (ArrayList<Individual> arrayList : allList) {
+				averageFitness = 0;
+				fw.write("Generation " + allList.indexOf(arrayList) + "\r\n");
+				for (Individual individual : arrayList) {
+					fw.write(individual.getX() + "," + individual.getY() + "," + individual.getFitness() + "\r\n");
+					averageFitness += individual.getFitness();
+				}
+				averageFitness = averageFitness / arrayList.size();
+				fw.write("Average fitness:" + ",,," + averageFitness + "\r\n");
+			}
+			fw.close();
+		} catch (IOException e) {
+			System.err.println("Error while output results");
+			e.printStackTrace();
+		}
+	}// end of output()
 
 	public static void main(String[] args) {
 		initialize();
@@ -221,16 +297,17 @@ public class ClassicalGA {
 			nextGeneration();
 		}
 
-		System.out.println("=====");
-
 		for (ArrayList<Individual> arrayList : pathList) {
-			System.out.println("Generation" + pathList.indexOf(arrayList));
+			System.out.println("Generation " + pathList.indexOf(arrayList));
 			for (Individual individual : arrayList) {
 				System.out.println(individual.getX() + "\t" + individual.getY() + "\t" + individual.getFitness());
 			}
-			System.out.println("*****");
+			System.out.println();
 		}
 
+		output();
+
+		System.out.println("~~End of program~~");
 	} // end of main()
 
 } // end of class ClassicalGA
