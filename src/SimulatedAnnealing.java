@@ -18,7 +18,7 @@ public class SimulatedAnnealing {
 
 	public static double initTemperature = 100;
 	public static double minTemperature = 0.001;
-	public static double coolingRate = 0.975;
+	public static double coolingRate = 0.95;
 
 	/**
 	 * Initialization

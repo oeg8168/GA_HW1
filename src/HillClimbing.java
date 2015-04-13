@@ -17,8 +17,8 @@ public class HillClimbing {
 	public static ArrayList<double[]> pathList;
 	public static ArrayList<double[]> allList;
 
-	public static int steps = 200;
-	public static double stepLength = 0.01;
+	public static int steps = 300;
+	public static double stepLength = 0.05;
 
 	/**
 	 * Initialization

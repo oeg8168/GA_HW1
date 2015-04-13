@@ -86,8 +86,8 @@ public class ClassicalGA {
 	public static ArrayList<ArrayList<Individual>> pathList;
 	public static ArrayList<ArrayList<Individual>> allList;
 
-	public static int maxPopulation = 10;
-	public static double crossoverRate = 0.70;
+	public static int maxPopulation = 20;
+	public static double crossoverRate = 0.80;
 	public static double mutationRate = 0.10;
 	public static int maxGeneration = 200;
 
