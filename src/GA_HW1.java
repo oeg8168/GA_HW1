@@ -1,3 +1,5 @@
+import java.io.File;
+
 /**
  * 
  * @author LISM_OEG
@@ -27,6 +29,26 @@ public class GA_HW1 {
 
 		return value;
 	} // end of equation()
+
+	/**
+	 * Create log folders if it doesn't exist
+	 */
+	public static void createLogFolder() {
+		if (!new File("Log/").exists())
+			new File("Log/").mkdirs();
+
+		if (!new File("Log/BitReverseHillClimbing/").exists())
+			new File("Log/BitReverseHillClimbing/").mkdirs();
+
+		if (!new File("Log/HillClimbing/").exists())
+			new File("Log/HillClimbing/").mkdirs();
+
+		if (!new File("Log/SimulatedAnnealing/").exists())
+			new File("Log/SimulatedAnnealing/").mkdirs();
+
+		if (!new File("Log/ClassicalGA/").exists())
+			new File("Log/ClassicalGA/").mkdirs();
+	}// end of createLogFolder()
 
 	/**
 	 * Check if the input is out of bound
